@@ -1,89 +1,89 @@
-var drinks = [
-    "latte", 
-    "mocha", 
-    "espresso", 
-    "cappuccino", 
-    "iced"
-]; 
+var drinks = ["latte", "mocha", "espresso", "cappuccino", "iced"];
 
-var selectedWord = ""; 
-
-var wins = 0; 
-var losses = 0;
-var userGuesses = 15; 
-var word = drinks[Math.floor(Math.random() * drinks.length)]; 
-
-var numberOfLetters = []; 
-var blanks = 0;  
-var successes = []; 
-var remaingGuesses = []; 
-var userChoices = " "; 
-
+var userAttempts = 15;
+var blanks = 0;
+var guessedLetters = [];
+var lettersInWord = [];
+var rightGuess = [];
+var remainingGuesses = 0;
+var userWins = 0;
+var userLosses = 0;
+var chosenWord = drinks[Math.floor(Math.random() * drinks.length)];
+console.log(chosenWord);
 
 function reset() {
-    userGuesses = 15; 
-    word = drinks[Math.floor(Math.random() * drinks.length)]; 
-    numberOfLetters = selectedWord.split(" ");
-    blanks = numberOfLetters.length; 
-    successes = []; 
-    remainingGuesses = []; 
+    remainingGUesses = 15;
 
-    for(var j = 0; j < blanks; j++) {
-        successes.push("_"); 
+    chosenWord = drinks[Math.floor(Math.random() * drinks.length)];
+
+    lettersInWord = chosenWord.split("_");
+    blanks = lettersInWord.length;
+
+    guessedLetters = [];
+    rightGuess = [];
+
+    for (var i = 0; i < blanks; i++) {
+        rightGuess.push("_");
     }
-document.getElementById("remaining-guesses").innerHTML = remainingGuesses; 
-document.getElementById("slots").innerHTML = successes.push(" "); 
-document.getElementById("wrong-guesses").innerHTML = remainingGuesses.push(" "); 
-    
-}
 
-function check(letter) {
-    var letterInWord = false; 
-    for (var j = 0; j < blanks; j++)  {
-        if (selectedword[j] === letter); {
-        letterInWord = true; 
+    console.log(rightGuess);
+
+    document.getElementById("remaining-guesses").innerHTML = remainingGuesses;
+    document.getElementById("right-guesses").innerHTML = rightGuess.join(" ");
+    document.getElementById("wrong-guesses").innerHTML = guessedLetters.join(" ");
+
+};
+
+function letterCheck(letter) {
+    var letterInWord = false;
+    for (var i = 0; i < blanks; i++) {
+        if (chosenWord[i] === letter) {
+            letterInWord = true;
         }
     }
-if (letterInWord) {
-    for (var j = 0; j < blanks; j++) {
-        if (selectedWord[j] === letter) {
-            successes[j] = letter; 
+
+    if (letterInWord) {
+        for (var j = 0; j < blanks; j++) {
+            if (chosenWord[j] === letter) {
+                rightGuess[j] = letter;
+            }
         }
+        console.log(rightGuess);
+    }
+    else {
+        guessedLetters.push(letter);
+        remainingGuesses--;
     }
 }
 
-else {
-    remainingGuesses.push(letter); 
-    userGuesses--; 
+function newRound() {
+    document.getElementById("remaining-guesses").innerHTML = remainingGuesses;
+    document.getElementById("right-guesses").innerHTML = rightGuess.join(" ");
+    document.getElementById("wrong-guesses").innerHTML = guessedLetters.join(" ");
+
+    if (lettersInWord.toString() === rightGuess.toString()) {
+        userWins++
+        alert("You win!");
+        document.getElementById("user-wins").innerHTML = "Wins: " + userWins;
+        restart();
+    }
+
+    else if (remainingGuesses === 0) {
+        userLosses++;
+        alert("You lose!")
+        document.getElementById("user-losses").innerHTML = "Losses: " + userLosses
+        reset();
+    }
 }
 
-}
+reset();
 
-function wins() {
+document.onkeypress = function (event) {
+    var userGuess = event.key;
+    userGuess = userGuess.toLowerCase();
+    console.log(userGuess);
 
-if (numberOfLetters.toString() === successes.toString()) {
-    wins++; 
-    alert("You won!"); 
-    document.getElementById("user-wins").innerHTML = wins; 
-    reset(); 
-}
+    letterCheck(userGuess);
+    newRound();
 
-else if (userGuesses = 0) {
-    losses++; 
-    alert("You lose! Try again!"); 
-    document.getElementById("user-losses").innerHTML = losses; 
-    reset(); 
-}
-
-}
-
-reset(); 
-
-document.onkeyup = function(event) {
- var letter = event.key; 
- check(letter); 
- wins(); 
- 
-}
-
-
+}; 
