@@ -1,89 +1,109 @@
 var drinks = ["latte", "mocha", "espresso", "cappuccino", "iced"];
 
-var userAttempts = 15;
-var blanks = 0;
-var guessedLetters = [];
-var lettersInWord = [];
-var rightGuess = [];
-var remainingGuesses = 0;
-var userWins = 0;
-var userLosses = 0;
-var chosenWord = drinks[Math.floor(Math.random() * drinks.length)];
-console.log(chosenWord);
+var currentWord = ""; 
+var lettersInWord = []; 
+var blanks = 0; 
+var answerBin = []; 
+var wrongLetters = []; 
+
+var userWins = 0; 
+var userLosses = 0; 
+var remainingGuesses = 15; 
 
 function reset() {
-    remainingGUesses = 15;
 
-    chosenWord = drinks[Math.floor(Math.random() * drinks.length)];
+    currentWord = drinks[Math.floor(Math.random() * drinks.length)];
+    console.log(currentWord); 
 
-    lettersInWord = chosenWord.split("_");
-    blanks = lettersInWord.length;
+    lettersInWord = currentWord.split(""); 
+    console.log(lettersInWord); 
 
-    guessedLetters = [];
-    rightGuess = [];
+    blanks = lettersInWord.length; 
+    console.log(blanks); 
 
-    for (var i = 0; i < blanks; i++) {
-        rightGuess.push("_");
+    remainingGuesses = 15; 
+    wrongLetters = []; 
+    answerBin = []; 
+
+    for(i = 0; i < blanks; i++) {
+        answerBin.push("_"); 
+        console.log(answerBin); 
     }
 
-    console.log(rightGuess);
+    document.getElementById("right-guesses").innerHTML = answerBin.join(" "); 
+    document.getElementById("remaining-guesses").innerHTML = "Guesses Left: " + " " + remainingGuesses; 
+    document.getElementById("user-wins").innerHTML = "Wins " + " " + userWins; 
+    document.getElementById("user-losses").innerHTML = "Losses" + " " + userLosses; 
 
-    document.getElementById("remaining-guesses").innerHTML = remainingGuesses;
-    document.getElementById("right-guesses").innerHTML = rightGuess.join(" ");
-    document.getElementById("wrong-guesses").innerHTML = guessedLetters.join(" ");
 
-};
+}
 
-function letterCheck(letter) {
-    var letterInWord = false;
-    for (var i = 0; i < blanks; i++) {
-        if (chosenWord[i] === letter) {
-            letterInWord = true;
-        }
-    }
+function letterChecker(letter) {
+    if (event.keyCode >= 65 && event.keyCode <= 90){
+        var correctLetter = false; 
 
-    if (letterInWord) {
-        for (var j = 0; j < blanks; j++) {
-            if (chosenWord[j] === letter) {
-                rightGuess[j] = letter;
+        for (var i = 0; i < blanks; i++) {
+            if(currentWord[i] == letter) {
+                correctLetter = true; 
             }
         }
-        console.log(rightGuess);
+
+        if(correctLetter) {
+            for (var i = 0; i < blanks; i++) {
+                if(currentWord[i] == letter) {
+                    answerBin[i] = letter; 
+                }
+            }
+        }
+
+        else {
+            wrongLetters.push(letter); 
+            remainingGuesses--
+            console.log(answerBin); 
+        }
+
+    } else {
+        alert("Please to pick a letter (a-z)"); 
     }
-    else {
-        guessedLetters.push(letter);
-        remainingGuesses--;
-    }
+      
 }
 
-function newRound() {
-    document.getElementById("remaining-guesses").innerHTML = remainingGuesses;
-    document.getElementById("right-guesses").innerHTML = rightGuess.join(" ");
-    document.getElementById("wrong-guesses").innerHTML = guessedLetters.join(" ");
+function gameover() {
 
-    if (lettersInWord.toString() === rightGuess.toString()) {
-        userWins++
-        alert("You win!");
-        document.getElementById("user-wins").innerHTML = "Wins: " + userWins;
-        restart();
+    document.getElementById("remaining-guesses").innerHTML = "Guesses Left: " + " " + remainingGuesses; 
+    document.getElementById("right-guesses").innerHTML = answerBin.join(" "); 
+    document.getElementById("wrong-guesses").innerHTML = "You Guessed: " + " " + wrongLetters; 
+
+    if (currentWord.toString() === answerBin.toString()) {
+        userWins++; 
+        alert("You win! Play again?"); 
+        console.log("winner!"); 
+
+        document.getElementsById("user-wins").innerHTML = "Wins: " + " " + userWins; 
+        reset(); 
+        document.getElementById("wrong-guesses").innerHTML = "You Guessed: " + " " + " "; 
+
+    } else if (remainingGuesses == 0) {
+        userLosses++; 
+        alert("You lose! Play again?"); 
+        console.log("loser!"); 
+
+        document.getElementById("user-losses").innerHTML = "Losses: " + " " + userLosses; 
+        reset(); 
+        document.getElementById("wrong-guesses").innerHTML = "You Guessed: " + " " + " "; 
     }
 
-    else if (remainingGuesses === 0) {
-        userLosses++;
-        alert("You lose!")
-        document.getElementById("user-losses").innerHTML = "Losses: " + userLosses
-        reset();
-    }
+    
+    
 }
 
-reset();
+reset(); 
 
-document.onkeypress = function (event) {
-    var userGuess = event.key;
-    userGuess = userGuess.toLowerCase();
-    console.log(userGuess);
+document.onkeyup = function(event) {
+    var lettersGuessed = String.fromCharCode(event.keyCode).toLowerCase(); 
+    console.log(lettersGuessed); 
 
-    letterCheck(userGuess);
-    newRound();
+    letterChecker(lettersGuessed); 
+    gameover(); 
 
-}; 
+}
